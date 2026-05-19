@@ -114,8 +114,17 @@ curl -X POST http://localhost:8000/parse \
 - 时间必须是 ISO 8601（包含时区）
 - `end` 必须晚于 `start`
 - `title` 不能为空
-- `items` 默认最多返回 3 个
+- **API 最多返回 3 个 items** — 长文本中若包含更多事件，仅提取最核心的前 3 个
 - 模型输出不合法时，返回 `ok=false` 与简短 `question`
+
+### 调整返回数量上限
+
+限制由两处控制，修改后重启服务即可：
+
+1. **SYSTEM_PROMPT（第 37 行）**：提示词第 7 条 `"默认最多 3 个 items"`，将数字改大以告知模型输出更多条目。
+2. **normalize_items 截断（第 102 行）**：`raw_items[:3]` 切片，改为目标上限（如 `raw_items[:5]`）。
+
+> 增大上限意味着返回体更大、模型解析可能变慢，建议根据实际场景控制在 5 以内。
 
 ## iPhone Shortcuts 调用建议
 
